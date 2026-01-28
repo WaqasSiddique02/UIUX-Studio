@@ -7,7 +7,7 @@ import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 function Header() {
   const { user } = useUser();
   return (
-    <div className="flex item-center justify-between p-4">
+    <div className="flex items-center justify-between p-4">
       <div className="flex items-center gap-2">
         <Image src={"/logo.png"} alt="Logo" width={40} height={40} />
         <h2 className="text-xl font-semibold">
