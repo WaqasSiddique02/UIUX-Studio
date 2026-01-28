@@ -39,10 +39,11 @@ function Hero() {
       router.push("/sign-in");
       return;
     }
-    setLoading(true);
+
     if(!userInput){
       return;
     }
+    setLoading(true);
 
     const projectId = crypto.randomUUID();
     const result=await axios.post('/api/project',{
