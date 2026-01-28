@@ -56,6 +56,7 @@ function Hero() {
     setLoading(false);
 
     //navigate to project route
+    router.push('/project/' + projectId);
   };
 
   return (
