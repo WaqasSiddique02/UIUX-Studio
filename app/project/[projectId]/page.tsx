@@ -60,14 +60,14 @@ function ProjectCanvasPlayGround() {
         const screen = screenConfig[index];
         if (screen?.code) continue;
 
-        setLoadingMsg("Generating Screen " + (index + 1));
-        const result = await axios.post("/api/generate-screen-ui", {
-          projectId,
-          screenId: screen?.screenId,
-          screenName: screen?.screenName,
-          purpose: screen?.purpose,
-          screenDescription: screen?.screenDescription,
-        });
+      setLoadingMsg("Generating Screen " + (index + 1));
+      const result = await axios.post("/api/generate-screen-ui", {
+        projectId,
+        screenId: screen?.screenId,
+        screenName: screen?.screenName,
+        purpose: screen?.purpose,
+        screenDescription: screen?.screenDescription,
+      });
 
         console.log(result.data);
         setScreenConfig((prev) =>
