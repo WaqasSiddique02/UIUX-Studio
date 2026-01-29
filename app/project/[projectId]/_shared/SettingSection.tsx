@@ -3,25 +3,44 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { THEME_NAME_LIST, THEMES } from "@/data/themes";
+import { ProjectType } from "@/type/types";
 import { Camera, Save, Share, SparklesIcon } from "lucide-react";
-import React, { useState } from "react";
 
-function SettingSection() {
+import React, { useEffect, useState } from "react";
+
+type Props = {
+  projectDetail: ProjectType | undefined;
+};
+
+function SettingSection({ projectDetail }: Props) {
   const [selectedTheme, setSelectedTheme] = useState<string>("AURORA_INK");
-  const [projectName,setProjectName]=useState('');
-  const [userNewScreenInput,setUserNewScreenInput]=useState<string>();
+  const [projectName, setProjectName] = useState<string>("");
+  const [userNewScreenInput, setUserNewScreenInput] = useState<string>("");
+
+  useEffect(() => {
+    if (projectDetail?.projectName) {
+      setProjectName(projectDetail.projectName);
+    }
+  }, [projectDetail]);
   return (
     <div className="w-[300px]  h-[90vh] p-5 border-r">
       <h2 className="font-medium text-lg">Settings</h2>
 
       <div className="mt-3">
         <h2 className="text-sm mb-1">Project Name</h2>
-        <Input placeholder="Project Name" onChange={(event)=>setProjectName(event.target.value)} />
+        <Input
+          placeholder="Project Name"
+          value={projectName}
+          onChange={(event) => setProjectName(event.target.value)}
+        />
       </div>
 
       <div className="mt-5">
         <h2 className="text-sm mb-1">Generate New Screen</h2>
-        <Textarea placeholder="Enter prompt to generate screen using AI" onChange={(event)=>setUserNewScreenInput(event.target.value)} />
+        <Textarea
+          placeholder="Enter prompt to generate screen using AI"
+          onChange={(event) => setUserNewScreenInput(event.target.value)}
+        />
         <Button size={"sm"} className="mt-2 w-full">
           <SparklesIcon />
           Generate With AI
@@ -57,14 +76,17 @@ function SettingSection() {
                     style={{ background: THEMES[theme].background }}
                   />
 
-                  <div className="h-4 w-4 rounded-full" style={{
-                    background:`linear-gradient(
+                  <div
+                    className="h-4 w-4 rounded-full"
+                    style={{
+                      background: `linear-gradient(
                     135deg,
                     ${THEMES[theme].primary},
                     ${THEMES[theme].secondary},
                     ${THEMES[theme].accent}
-                  )`
-                  }}/>
+                  )`,
+                    }}
+                  />
                 </div>
               </div>
             ))}
