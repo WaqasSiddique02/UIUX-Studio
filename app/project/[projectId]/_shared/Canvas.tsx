@@ -50,7 +50,7 @@ function Canvas({ projectDetail, screenConfig, loading }: Props) {
     >
       <TransformWrapper
         initialScale={0.7}
-        minScale={0}
+        minScale={0.1}
         maxScale={3}
         initialPositionX={50}
         initialPositionY={50}
