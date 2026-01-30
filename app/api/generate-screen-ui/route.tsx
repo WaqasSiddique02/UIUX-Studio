@@ -23,46 +23,47 @@ export async function POST(req: NextRequest) {
     screen Description: ${screenDescription},
     `;
 
-    try{
-  const aiResult = await openrouter.chat.send({
-    model: "arcee-ai/trinity-large-preview:free",
-    messages: [
-      {
-        role: "system",
-        content: [
-          {
-            type: "text",
-            text: GENERATE_SCREEN_PROMPT,
-          },
-        ],
-      },
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: userInput,
-          },
-        ],
-      },
-    ],
-    stream: false,
-  });
+  try {
+    const aiResult = await openrouter.chat.send({
+      model: "arcee-ai/trinity-large-preview:free",
+      messages: [
+        {
+          role: "system",
+          content: [
+            {
+              type: "text",
+              text: GENERATE_SCREEN_PROMPT,
+            },
+          ],
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: userInput,
+            },
+          ],
+        },
+      ],
+      stream: false,
+    });
 
-  const code = aiResult?.choices[0]?.message?.content;
-  const updateResult = await db
-    .update(ScreenConfigTable)
-    .set({
-      code: code as string,
-    })
-    .where(
-      and(
-        eq(ScreenConfigTable.projectId, projectId),
-        eq(ScreenConfigTable?.screenId, screenId as string),
-      ),
-    ).returning();
-  return NextResponse.json(updateResult[0]);
-}catch(error){
-    return NextResponse.json({msg:"Internal Server Error"})
-}
+    const code = aiResult?.choices[0]?.message?.content;
+    const updateResult = await db
+      .update(ScreenConfigTable)
+      .set({
+        code: code as string,
+      })
+      .where(
+        and(
+          eq(ScreenConfigTable.projectId, projectId),
+          eq(ScreenConfigTable?.screenId, screenId as string),
+        ),
+      )
+      .returning();
+    return NextResponse.json(updateResult[0]);
+  } catch (error) {
+    return NextResponse.json({ msg: "Internal Server Error" });
+  }
 }

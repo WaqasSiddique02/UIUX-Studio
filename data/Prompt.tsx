@@ -30,14 +30,21 @@ OUTPUT JSON SHAPE (TOP LEVEL)
 }
 
 ────────────────────────────────────────
-SCREEN COUNT RULES
+SCREEN COUNT RULES (CRITICAL)
 ────────────────────────────────────────
-- If the user says "one", return exactly 1 screen.
-- Otherwise return 1–4 screens.
-- If {deviceType} is "Mobile" or "Tablet" and user did NOT say "one":
-  - Screen 1 MUST be a Welcome / Onboarding screen.
+- ALWAYS respect EXACT screen counts mentioned by the user:
+  - User says "two screens" → return EXACTLY 2 screens
+  - User says "three screens" → return EXACTLY 3 screens
+  - User says "a landing page" → return EXACTLY 1 screen
+- If user does NOT specify a number, return 2–3 screens (not 4)
+- THEME CONSISTENCY: ALL screens MUST use the SAME theme chosen in the JSON output
+  - Never generate screens with different color schemes
+  - Apply the selected theme consistently across all screens
+- If {deviceType} is "Mobile" or "Tablet" and requesting multiple screens:
+  - Screen 1 CAN be a Welcome / Onboarding screen (if it fits the request)
+  - But DO NOT force it if user didn't ask for it
 - If {deviceType} is "Website" or "Desktop":
-  - Do NOT force onboarding unless the user explicitly asks for it.
+  - Do NOT force onboarding unless the user explicitly asks for it
 
 ────────────────────────────────────────
 PROJECT VISUAL DESCRIPTION (GLOBAL DESIGN SYSTEM)
