@@ -11,20 +11,23 @@ function ProjectHeader() {
   const [loading, setLoading] = useState(false);
 
   const onSave = async () => {
-    try{
-    setLoading(true);
-    const result = await axios.put("/api/project/", {
-      theme: settingsDetail?.theme,
-      projectId: settingsDetail?.projectId,
-      projectName: settingsDetail?.projectName,
-    });
-    setLoading(false);
-    toast.success('Setting Saved');
-    }catch(err){
-      setLoading(false);
-      toast.error('Internal Server Error');
+    if (!settingsDetail?.projectId) {
+      toast.error('Project ID is missing');
+      return;
     }
-
+    try {
+      setLoading(true);
+      const result = await axios.put("/api/project/", {
+        theme: settingsDetail?.theme,
+        projectId: settingsDetail?.projectId,
+        projectName: settingsDetail?.projectName,
+      });
+      toast.success('Setting Saved');
+    } catch (err) {
+      toast.error('Internal Server Error');
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="flex items-center justify-between p-3 shadow">
