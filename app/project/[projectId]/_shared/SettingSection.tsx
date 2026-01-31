@@ -2,11 +2,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { SettingContext } from "@/context/SettingContext";
 import { THEME_NAME_LIST, THEMES } from "@/data/themes";
 import { ProjectType } from "@/type/types";
 import { Camera, Save, Share, SparklesIcon } from "lucide-react";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 type Props = {
   projectDetail: ProjectType | undefined;
@@ -16,12 +17,25 @@ function SettingSection({ projectDetail }: Props) {
   const [selectedTheme, setSelectedTheme] = useState<string>("AURORA_INK");
   const [projectName, setProjectName] = useState<string>("");
   const [userNewScreenInput, setUserNewScreenInput] = useState<string>("");
+  const { settingsDetail, setSettingsDetail } = useContext(SettingContext);
 
   useEffect(() => {
     if (projectDetail?.projectName) {
       setProjectName(projectDetail.projectName);
     }
+    if (projectDetail?.theme) {
+      setSelectedTheme(projectDetail.theme as string);
+    }
   }, [projectDetail]);
+
+  const onThemeSelect = (theme: string) => {
+    setSelectedTheme(theme);
+    setSettingsDetail((prev: any) => ({
+      ...prev,
+      theme: theme,
+    }));
+  };
+
   return (
     <div className="w-[300px]  h-[90vh] p-5 border-r">
       <h2 className="font-medium text-lg">Settings</h2>
@@ -31,7 +45,14 @@ function SettingSection({ projectDetail }: Props) {
         <Input
           placeholder="Project Name"
           value={projectName}
-          onChange={(event) => setProjectName(event.target.value)}
+          onChange={(event) => {
+            const newName = event.target.value;
+            setProjectName(newName);
+            setSettingsDetail((prev: any) => ({
+              ...prev,
+              projectName: newName,
+            }));
+          }}
         />
       </div>
 
@@ -55,7 +76,7 @@ function SettingSection({ projectDetail }: Props) {
               <div
                 key={theme}
                 className={`p-3 border rounded-xl mb-2 ${theme === selectedTheme && "border-primary bg-primary/20"}`}
-                onClick={() => setSelectedTheme(theme)}
+                onClick={() => onThemeSelect(theme)}
               >
                 <h2>{theme}</h2>
                 <div className="flex gap-2">

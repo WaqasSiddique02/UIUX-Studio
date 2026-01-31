@@ -33,3 +33,14 @@ export async function GET(req:NextRequest) {
         return NextResponse.json({message:"Error fetching project"});
     }
 }
+
+export async function PUT(req:NextRequest) {
+    const {projectName,theme,projectId}=await req.json();
+
+    const result=await db.update(ProjectTable).set({
+        projectName:projectName,
+        theme:theme
+    }).where(eq(ProjectTable.projectId,projectId)).returning();
+
+    return NextResponse.json(result[0]);
+}
