@@ -33,10 +33,12 @@ OUTPUT JSON SHAPE (TOP LEVEL)
 SCREEN COUNT RULES (CRITICAL)
 ────────────────────────────────────────
 - ALWAYS respect EXACT screen counts mentioned by the user:
+  - User says "landing page" or "one page" or "single page" → return EXACTLY 1 screen
   - User says "two screens" → return EXACTLY 2 screens
   - User says "three screens" → return EXACTLY 3 screens
-  - User says "a landing page" → return EXACTLY 1 screen
+  - If user doesn't specify but says common single-page concepts (landing, home, dashboard): return 1 screen
 - If user does NOT specify a number, return 2–3 screens (not 4)
+- NEVER return more than the requested count. STRICTLY enforce user intent.
 - THEME CONSISTENCY: ALL screens MUST use the SAME theme chosen in the JSON output
   - Never generate screens with different color schemes
   - Apply the selected theme consistently across all screens
