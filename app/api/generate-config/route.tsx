@@ -45,16 +45,23 @@ export async function POST(req: NextRequest) {
       theme:JSONAiResult?.theme
     }).where(eq(ProjectTable.projectId,projectId as string));
 
-    //insert screen config
-    JSONAiResult.screens?.forEach(async (screen: any) => {
-      const result = await db.insert(ScreenConfigTable).values({
-        projectId: projectId,
-        purpose: screen?.purpose,
-        screenDescription: screen?.layoutDescription,
-        screenId: screen?.id,
-        screenName: screen?.name,
-      });
-    });
+    // Delete existing screens to prevent duplicates
+    await db.delete(ScreenConfigTable).where(eq(ScreenConfigTable.projectId, projectId as string));
+
+    // Insert screen config using Promise.all to wait for all inserts
+    if (JSONAiResult.screens && Array.isArray(JSONAiResult.screens)) {
+      await Promise.all(
+        JSONAiResult.screens.map(async (screen: any) => {
+          return db.insert(ScreenConfigTable).values({
+            projectId: projectId,
+            purpose: screen?.purpose,
+            screenDescription: screen?.layoutDescription,
+            screenId: screen?.id,
+            screenName: screen?.name,
+          });
+        })
+      );
+    }
     return NextResponse.json(JSONAiResult);
   }else{
     NextResponse.json({msg:"Internal Server Error"})

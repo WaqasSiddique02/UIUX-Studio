@@ -28,6 +28,13 @@ function SettingSection({ projectDetail }: Props) {
     }
   }, [projectDetail]);
 
+  // Sync with context
+  useEffect(() => {
+    if (settingsDetail?.theme) {
+      setSelectedTheme(settingsDetail.theme as string);
+    }
+  }, [settingsDetail?.theme]);
+
   const onThemeSelect = (theme: string) => {
     setSelectedTheme(theme);
     setSettingsDetail((prev: any) => ({

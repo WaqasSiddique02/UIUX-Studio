@@ -9,14 +9,25 @@ import { ProjectType, ScreenConfig } from "@/type/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Minus, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 type Props = {
   projectDetail: ProjectType | undefined;
   screenConfig: ScreenConfig[];
   loading?: boolean;
+  onDelete: (screenId: string) => void;
+  projectId: string;
+  onUpdate?: (screenId: string, updatedScreen: ScreenConfig) => void;
 };
 
-function Canvas({ projectDetail, screenConfig, loading }: Props) {
+function Canvas({ projectDetail, screenConfig, loading, onDelete, projectId, onUpdate }: Props) {
   const [panningEnabled, setPanningEnabled] = useState(true);
   const [screenWidth, setScreenWidth] = useState(0);
   const [deviceType, setDeviceType] = useState<string>("");
@@ -104,16 +115,20 @@ function Canvas({ projectDetail, screenConfig, loading }: Props) {
               wrapperStyle={{ width: "100%", height: "100%" }}
             >
               {screenConfig?.map((screen, index) => (
-                <div key={index}>
+                <div key={`${screen?.screenId}-${index}`} style={{ position: 'absolute', left: index * (SCREEN_WIDTH + gap), top: 0 }}>
                   {screen?.code ? (
                     <ScreenFrame
-                      x={index * (SCREEN_WIDTH + gap)}
+                      x={0}
                       width={SCREEN_WIDTH}
                       height={SCREEN_HEIGHT}
                       y={0}
                       setPanningEnabled={setPanningEnabled}
                       htmlCode={screen?.code}
                       projectDetail={projectDetail}
+                      screen={screen}
+                      onDelete={() => onDelete(screen.screenId)}
+                      projectId={projectId}
+                      onUpdate={(updatedScreen) => onUpdate?.(screen.screenId, updatedScreen)}
                     />
                   ) : (
                     <div
