@@ -12,9 +12,11 @@ import { SettingContext } from "@/context/SettingContext";
 function ProjectCanvasPlayGround() {
   const { projectId } = useParams();
   const [projectDetail, setProjectDetail] = useState<ProjectType>();
-  const [screenConfigOriginal, setScreenConfigOriginal] = useState<ScreenConfig[]>([]);
+  const [screenConfigOriginal, setScreenConfigOriginal] = useState<
+    ScreenConfig[]
+  >([]);
   const [screenConfig, setScreenConfig] = useState<ScreenConfig[]>([]);
-  const {settingsDetail,setSettingsDetail}=useContext(SettingContext);
+  const { settingsDetail, setSettingsDetail } = useContext(SettingContext);
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState("Loading");
   const [hasGeneratedConfig, setHasGeneratedConfig] = useState(false);
@@ -45,14 +47,23 @@ function ProjectCanvasPlayGround() {
   };
 
   useEffect(() => {
-    if (projectDetail && screenConfigOriginal && screenConfigOriginal?.length == 0 && !hasGeneratedConfig) {
-      setHasGeneratedConfig(true);
+    if (
+      projectDetail &&
+      screenConfigOriginal &&
+      screenConfigOriginal?.length == 0 &&
+      !hasGeneratedConfig
+    ) {
       generateScreenConfig();
-    } else if (projectDetail && screenConfigOriginal && screenConfigOriginal?.length > 0 && !hasGeneratedConfig ) {
+    } else if (
+      projectDetail &&
+      screenConfigOriginal &&
+      screenConfigOriginal?.length > 0 &&
+      !hasGeneratedConfig
+    ) {
       setHasGeneratedConfig(true);
       GenerateScreenUIUX();
     }
-  }, [screenConfigOriginal, projectDetail]);
+  }, [screenConfigOriginal, projectDetail, hasGeneratedConfig]);
 
   const generateScreenConfig = async () => {
     setLoading(true);
@@ -98,17 +109,28 @@ function ProjectCanvasPlayGround() {
 
   const handleScreenDelete = (screenId: string) => {
     // Immediately update both state arrays to remove the deleted screen
-    setScreenConfig((prev) => prev.filter((screen) => screen.screenId !== screenId));
-    setScreenConfigOriginal((prev) => prev.filter((screen) => screen.screenId !== screenId));
+    setScreenConfig((prev) =>
+      prev.filter((screen) => screen.screenId !== screenId),
+    );
+    setScreenConfigOriginal((prev) =>
+      prev.filter((screen) => screen.screenId !== screenId),
+    );
   };
 
-  const handleScreenUpdate = (screenId: string, updatedScreen: ScreenConfig) => {
+  const handleScreenUpdate = (
+    screenId: string,
+    updatedScreen: ScreenConfig,
+  ) => {
     // Immediately update the screen in both state arrays
-    setScreenConfig((prev) => 
-      prev.map((screen) => screen.screenId === screenId ? updatedScreen : screen)
+    setScreenConfig((prev) =>
+      prev.map((screen) =>
+        screen.screenId === screenId ? updatedScreen : screen,
+      ),
     );
-    setScreenConfigOriginal((prev) => 
-      prev.map((screen) => screen.screenId === screenId ? updatedScreen : screen)
+    setScreenConfigOriginal((prev) =>
+      prev.map((screen) =>
+        screen.screenId === screenId ? updatedScreen : screen,
+      ),
     );
   };
 
@@ -127,9 +149,9 @@ function ProjectCanvasPlayGround() {
         {/* Settings */}
         <SettingSection projectDetail={projectDetail} />
         {/* Canvas */}
-        <Canvas 
-          projectDetail={projectDetail} 
-          screenConfig={screenConfig} 
+        <Canvas
+          projectDetail={projectDetail}
+          screenConfig={screenConfig}
           onDelete={handleScreenDelete}
           projectId={projectId as string}
           onUpdate={handleScreenUpdate}
