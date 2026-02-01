@@ -1,12 +1,16 @@
 import { db } from "@/config/db";
 import { openrouter } from "@/config/openrouter";
 import { ProjectTable, ScreenConfigTable } from "@/config/schema";
-import { APP_LAYOUT_CONFIG_PROMPT } from "@/data/Prompt";
+import {
+  APP_LAYOUT_CONFIG_PROMPT,
+  GENRATE_NEW_SCREEN_IN_EXISITING_PROJECT_PROJECT,
+} from "@/data/Prompt";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { userInput, deviceType, projectId } = await req.json();
+  const { userInput, deviceType, projectId, oldScreenDescription, theme } =
+    await req.json();
 
   const aiResult = await openrouter.chat.send({
     model: "arcee-ai/trinity-large-preview:free",
@@ -16,7 +20,12 @@ export async function POST(req: NextRequest) {
         content: [
           {
             type: "text",
-            text: APP_LAYOUT_CONFIG_PROMPT.replace("{deviceType}", deviceType),
+            text: oldScreenDescription
+              ? GENRATE_NEW_SCREEN_IN_EXISITING_PROJECT_PROJECT.replace(
+                  "{deviceType}",
+                  deviceType,
+                ).replace("{theme}", theme)
+              : APP_LAYOUT_CONFIG_PROMPT.replace("{deviceType}", deviceType),
           },
         ],
       },
@@ -25,7 +34,7 @@ export async function POST(req: NextRequest) {
         content: [
           {
             type: "text",
-            text: userInput,
+            text: oldScreenDescription?userInput+"Old Screen Description is: "+oldScreenDescription :userInput,
           },
         ],
       },
@@ -39,14 +48,21 @@ export async function POST(req: NextRequest) {
 
   if (JSONAiResult) {
     // update project table with project name
-    await db.update(ProjectTable).set({
-      projectVisualDescription: JSONAiResult?.projectVisualDescription,
-      projectName: JSONAiResult?.projectName,
-      theme:JSONAiResult?.theme
-    }).where(eq(ProjectTable.projectId,projectId as string));
+    !oldScreenDescription&& await db
+      .update(ProjectTable)
+      .set({
+        projectVisualDescription: JSONAiResult?.projectVisualDescription,
+        projectName: JSONAiResult?.projectName,
+        theme: JSONAiResult?.theme,
+      })
+      .where(eq(ProjectTable.projectId, projectId as string));
 
-    // Delete existing screens to prevent duplicates
-    await db.delete(ScreenConfigTable).where(eq(ScreenConfigTable.projectId, projectId as string));
+    // Only delete existing screens if it's a new project (no oldScreenDescription)
+    if (!oldScreenDescription) {
+      await db
+        .delete(ScreenConfigTable)
+        .where(eq(ScreenConfigTable.projectId, projectId as string));
+    }
 
     // Insert screen config using Promise.all to wait for all inserts
     if (JSONAiResult.screens && Array.isArray(JSONAiResult.screens)) {
@@ -59,11 +75,11 @@ export async function POST(req: NextRequest) {
             screenId: screen?.id,
             screenName: screen?.name,
           });
-        })
+        }),
       );
     }
     return NextResponse.json(JSONAiResult);
-  }else{
-    NextResponse.json({msg:"Internal Server Error"})
+  } else {
+    NextResponse.json({ msg: "Internal Server Error" });
   }
 }

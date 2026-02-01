@@ -57,13 +57,16 @@ function ProjectCanvasPlayGround() {
     } else if (
       projectDetail &&
       screenConfigOriginal &&
-      screenConfigOriginal?.length > 0 &&
-      !hasGeneratedConfig
+      screenConfigOriginal?.length > 0
     ) {
-      setHasGeneratedConfig(true);
-      GenerateScreenUIUX();
+      // Check if there are any screens without code
+      const hasScreensWithoutCode = screenConfigOriginal.some(screen => !screen?.code);
+      if (hasScreensWithoutCode) {
+        setHasGeneratedConfig(true);
+        GenerateScreenUIUX();
+      }
     }
-  }, [screenConfigOriginal, projectDetail, hasGeneratedConfig]);
+  }, [screenConfigOriginal, projectDetail]);
 
   const generateScreenConfig = async () => {
     setLoading(true);
@@ -147,7 +150,14 @@ function ProjectCanvasPlayGround() {
           </div>
         )}
         {/* Settings */}
-        <SettingSection projectDetail={projectDetail} />
+        <SettingSection 
+          projectDetail={projectDetail} 
+          screenDescription={screenConfig[0]?.screenDescription} 
+          onScreenGenerated={GetProjectDetail}
+          loading={loading}
+          setLoading={setLoading}
+          setLoadingMsg={setLoadingMsg}
+        />
         {/* Canvas */}
         <Canvas
           projectDetail={projectDetail}
