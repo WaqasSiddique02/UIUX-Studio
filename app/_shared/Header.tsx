@@ -11,13 +11,9 @@ function Header() {
       <div className="flex items-center gap-2">
         <Image src={"/logo.png"} alt="Logo" width={40} height={40} />
         <h2 className="text-xl font-semibold">
-          <span className="text-primary">UIUX</span> MOCK
+          <span className="text-primary">UIUX</span> Studio
         </h2>
       </div>
-      <ul className="flex gap-5 items-center text-lg">
-        <li className="hover:text-primary cursor-pointer">Home</li>
-        <li className="hover:text-primary cursor-pointer">Pricing</li>
-      </ul>
       {!user ? (
         <SignInButton mode="modal">
           <Button>Get Started</Button>

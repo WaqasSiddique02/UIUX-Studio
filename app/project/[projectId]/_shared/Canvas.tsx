@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   TransformWrapper,
   TransformComponent,
@@ -31,6 +31,7 @@ function Canvas({ projectDetail, screenConfig, loading, onDelete, projectId, onU
   const [panningEnabled, setPanningEnabled] = useState(true);
   const [screenWidth, setScreenWidth] = useState(0);
   const [deviceType, setDeviceType] = useState<string>("");
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   // Persist device type to localStorage on change
   useEffect(() => {
@@ -89,8 +90,12 @@ function Canvas({ projectDetail, screenConfig, loading, onDelete, projectId, onU
     );
   };
 
+
+
+
   return (
     <div
+      ref={canvasRef}
       className="w-full h-screen bg-gray-200"
       style={{
         backgroundImage: "radial-gradient(rgba(0,0,0,0.15)1px,transparent 1px)",
@@ -99,7 +104,7 @@ function Canvas({ projectDetail, screenConfig, loading, onDelete, projectId, onU
     >
       <TransformWrapper
         initialScale={0.7}
-        minScale={0.3}
+        minScale={0.2}
         maxScale={3}
         initialPositionX={50}
         initialPositionY={50}

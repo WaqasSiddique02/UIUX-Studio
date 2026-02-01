@@ -138,9 +138,9 @@ function ProjectCanvasPlayGround() {
   };
 
   return (
-    <div>
+    <div className="h-screen overflow-hidden flex flex-col">
       <ProjectHeader />
-      <div className="flex">
+      <div className="flex flex-1 overflow-hidden">
         {loading && (
           <div className="p-3 fixed bg-blue-300/20 border border-blue-400 rounded-xl left-1/2 top-30 z-50 transform -translate-x-1/2">
             <h2 className="flex gap-2 items-center">
