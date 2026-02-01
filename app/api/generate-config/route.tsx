@@ -47,18 +47,20 @@ export async function POST(req: NextRequest) {
   );
 
   if (JSONAiResult) {
-    // update project table with project name
-    !oldScreenDescription&& await db
-      .update(ProjectTable)
-      .set({
-        projectVisualDescription: JSONAiResult?.projectVisualDescription,
-        projectName: JSONAiResult?.projectName,
-        theme: JSONAiResult?.theme,
-      })
-      .where(eq(ProjectTable.projectId, projectId as string));
+    // update project table with project name only for new projects
+    if (oldScreenDescription == null || oldScreenDescription === undefined) {
+      await db
+        .update(ProjectTable)
+        .set({
+          projectVisualDescription: JSONAiResult?.projectVisualDescription,
+          projectName: JSONAiResult?.projectName,
+          theme: JSONAiResult?.theme,
+        })
+        .where(eq(ProjectTable.projectId, projectId as string));
+    }
 
     // Only delete existing screens if it's a new project (no oldScreenDescription)
-    if (!oldScreenDescription) {
+    if (oldScreenDescription == null || oldScreenDescription === undefined) {
       await db
         .delete(ScreenConfigTable)
         .where(eq(ScreenConfigTable.projectId, projectId as string));
