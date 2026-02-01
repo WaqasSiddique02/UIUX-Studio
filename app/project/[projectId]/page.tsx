@@ -17,6 +17,12 @@ function ProjectCanvasPlayGround() {
   const {settingsDetail,setSettingsDetail}=useContext(SettingContext);
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState("Loading");
+  const [hasGeneratedConfig, setHasGeneratedConfig] = useState(false);
+
+  // Reset hasGeneratedConfig when projectId changes (new project)
+  useEffect(() => {
+    setHasGeneratedConfig(false);
+  }, [projectId]);
 
   useEffect(() => {
     projectId && GetProjectDetail();
@@ -39,12 +45,14 @@ function ProjectCanvasPlayGround() {
   };
 
   useEffect(() => {
-    if (projectDetail && screenConfigOriginal && screenConfigOriginal?.length == 0) {
+    if (projectDetail && screenConfigOriginal && screenConfigOriginal?.length == 0 && !hasGeneratedConfig) {
+      setHasGeneratedConfig(true);
       generateScreenConfig();
-    } else if (projectDetail && screenConfigOriginal  ) {
+    } else if (projectDetail && screenConfigOriginal && screenConfigOriginal?.length > 0 && !hasGeneratedConfig ) {
+      setHasGeneratedConfig(true);
       GenerateScreenUIUX();
     }
-  }, [screenConfigOriginal]);
+  }, [screenConfigOriginal, projectDetail]);
 
   const generateScreenConfig = async () => {
     setLoading(true);
@@ -55,7 +63,8 @@ function ProjectCanvasPlayGround() {
       userInput: projectDetail?.userInput,
     });
     console.log(result.data);
-    GetProjectDetail();
+    // Fetch updated project details
+    await GetProjectDetail();
     setLoading(false);
   };
 
@@ -87,12 +96,28 @@ function ProjectCanvasPlayGround() {
     }
   };
 
+  const handleScreenDelete = (screenId: string) => {
+    // Immediately update both state arrays to remove the deleted screen
+    setScreenConfig((prev) => prev.filter((screen) => screen.screenId !== screenId));
+    setScreenConfigOriginal((prev) => prev.filter((screen) => screen.screenId !== screenId));
+  };
+
+  const handleScreenUpdate = (screenId: string, updatedScreen: ScreenConfig) => {
+    // Immediately update the screen in both state arrays
+    setScreenConfig((prev) => 
+      prev.map((screen) => screen.screenId === screenId ? updatedScreen : screen)
+    );
+    setScreenConfigOriginal((prev) => 
+      prev.map((screen) => screen.screenId === screenId ? updatedScreen : screen)
+    );
+  };
+
   return (
     <div>
       <ProjectHeader />
       <div className="flex">
         {loading && (
-          <div className="p-3 absolute bg-blue-300/20 border border-blue-400 rounded-xl left-1/2 top-30">
+          <div className="p-3 fixed bg-blue-300/20 border border-blue-400 rounded-xl left-1/2 top-30 z-50 transform -translate-x-1/2">
             <h2 className="flex gap-2 items-center">
               <Loader2Icon className="animate-spin" />
               {loadingMsg}
@@ -102,7 +127,13 @@ function ProjectCanvasPlayGround() {
         {/* Settings */}
         <SettingSection projectDetail={projectDetail} />
         {/* Canvas */}
-        <Canvas projectDetail={projectDetail} screenConfig={screenConfig} />
+        <Canvas 
+          projectDetail={projectDetail} 
+          screenConfig={screenConfig} 
+          onDelete={handleScreenDelete}
+          projectId={projectId as string}
+          onUpdate={handleScreenUpdate}
+        />
       </div>
     </div>
   );

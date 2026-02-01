@@ -1,9 +1,16 @@
 import { SettingContext } from "@/context/SettingContext";
 import { THEMES, themeToCssVars } from "@/data/themes";
-import { ProjectType } from "@/type/types";
+import { ProjectType, ScreenConfig } from "@/type/types";
 import { GripVertical } from "lucide-react";
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Rnd } from "react-rnd";
+import ScreenHandler from "./ScreenHandler";
 
 type Props = {
   x: number;
@@ -13,6 +20,10 @@ type Props = {
   height: number;
   htmlCode: string | undefined;
   projectDetail?: ProjectType | undefined;
+  screen: ScreenConfig;
+  onDelete: () => void;
+  projectId: string;
+  onUpdate?: (updatedScreen: ScreenConfig) => void;
 };
 
 function ScreenFrame({
@@ -23,13 +34,19 @@ function ScreenFrame({
   height,
   htmlCode,
   projectDetail,
+  screen,
+  onDelete,
+  projectId,
+  onUpdate,
 }: Props) {
   const { settingsDetail, setSettingsDetail } = useContext(SettingContext);
-  const theme = THEMES[(settingsDetail?.theme ??projectDetail?.theme) as keyof typeof THEMES];
+  const theme =
+    THEMES[
+      (settingsDetail?.theme ?? projectDetail?.theme) as keyof typeof THEMES
+    ];
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [size, setSize] = useState({ width, height });
-  const measuredHeightRef = useRef<number | null>(null);
-  const previousHtmlCodeRef = useRef(htmlCode);
+  const isFirstLoadRef = useRef(true);
 
   useEffect(() => {
     setSize({ width, height });
@@ -70,11 +87,6 @@ function ScreenFrame({
     const iframe = iframeRef.current;
     if (!iframe) return;
 
-    // Skip measurement if only theme changed, not htmlCode
-    if (htmlCode === previousHtmlCodeRef.current && measuredHeightRef.current !== null) {
-      return;
-    }
-
     try {
       const doc = iframe.contentDocument;
       if (!doc) return;
@@ -96,10 +108,7 @@ function ScreenFrame({
       const buffer = 20; // extra padding buffer
       const next = Math.max(contentH + headerH + spacer + buffer, 160);
 
-      // Store the measured height for this htmlCode
-      measuredHeightRef.current = next;
-      previousHtmlCodeRef.current = htmlCode;
-
+      // Only update if height actually changed
       setSize((s) =>
         Math.abs(s.height - next) > 2 ? { ...s, height: next } : s,
       );
@@ -115,8 +124,9 @@ function ScreenFrame({
     let cleanupFn: (() => void) | undefined;
 
     const onLoad = () => {
-      // Only measure if htmlCode actually changed
-      if (htmlCode !== previousHtmlCodeRef.current) {
+      // Always measure on first load
+      if (isFirstLoadRef.current) {
+        isFirstLoadRef.current = false;
         measureIframeHeight();
 
         // ✅ observe DOM changes inside iframe
@@ -135,12 +145,14 @@ function ScreenFrame({
         const t1 = window.setTimeout(measureIframeHeight, 50);
         const t2 = window.setTimeout(measureIframeHeight, 200);
         const t3 = window.setTimeout(measureIframeHeight, 600);
+        const t4 = window.setTimeout(measureIframeHeight, 1200);
 
         cleanupFn = () => {
           observer.disconnect();
           window.clearTimeout(t1);
           window.clearTimeout(t2);
           window.clearTimeout(t3);
+          window.clearTimeout(t4);
         };
       }
     };
@@ -184,8 +196,13 @@ function ScreenFrame({
         }}
       >
         <div className="drag-handle flex gap-2 items-center cursor-move bg-white p-4 border-b border-gray-200 rounded-lg">
-          <GripVertical className="text-gray-500 h-4 w-3 " />
-          Drag here
+          <ScreenHandler 
+            screen={screen} 
+            iframeRef={iframeRef} 
+            onDelete={onDelete} 
+            projectId={projectId}
+            onUpdate={onUpdate}
+          />
         </div>
         <div style={{ height: "12px" }}></div>
         <iframe
