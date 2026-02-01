@@ -5,15 +5,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { SettingContext } from "@/context/SettingContext";
 import { THEME_NAME_LIST, THEMES } from "@/data/themes";
 import { ProjectType } from "@/type/types";
-import { Camera, Save, Share, SparklesIcon } from "lucide-react";
+import axios from "axios";
+import { Camera, Loader2Icon, Save, Share, SparklesIcon } from "lucide-react";
 
 import React, { useContext, useEffect, useState } from "react";
 
 type Props = {
   projectDetail: ProjectType | undefined;
+  screenDescription?: string | undefined;
+  onScreenGenerated?: () => void;
+  loading?: boolean;
+  setLoading?: (loading: boolean) => void;
+  setLoadingMsg?: (msg: string) => void;
 };
 
-function SettingSection({ projectDetail }: Props) {
+function SettingSection({ projectDetail, screenDescription, onScreenGenerated, loading, setLoading, setLoadingMsg }: Props) {
   const [selectedTheme, setSelectedTheme] = useState<string>("AURORA_INK");
   const [projectName, setProjectName] = useState<string>("");
   const [userNewScreenInput, setUserNewScreenInput] = useState<string>("");
@@ -43,6 +49,28 @@ function SettingSection({ projectDetail }: Props) {
     }));
   };
 
+  const GenerateNewScreen = async () => {
+    try {
+      if (setLoading) setLoading(true);
+      if (setLoadingMsg) setLoadingMsg('Generating Screen Config...');
+      const result = await axios.post("/api/generate-config", {
+        projectId: projectDetail?.projectId,
+        projectName: projectDetail?.projectName,
+        deviceType: projectDetail?.device,
+        theme: projectDetail?.theme,
+        oldScreenDescription: screenDescription,
+        userInput: userNewScreenInput,
+      });
+      console.log(result.data);
+      // Trigger parent to reload and generate UI for new screens
+      if (onScreenGenerated) {
+        onScreenGenerated();
+      }
+    } catch (err) {
+      if (setLoading) setLoading(false);
+    }
+  };
+
   return (
     <div className="w-[300px]  h-[90vh] p-5 border-r">
       <h2 className="font-medium text-lg">Settings</h2>
@@ -69,8 +97,17 @@ function SettingSection({ projectDetail }: Props) {
           placeholder="Enter prompt to generate screen using AI"
           onChange={(event) => setUserNewScreenInput(event.target.value)}
         />
-        <Button size={"sm"} className="mt-2 w-full">
-          <SparklesIcon />
+        <Button
+          size={"sm"}
+          className="mt-2 w-full"
+          onClick={GenerateNewScreen}
+          disabled={loading}
+        >
+          {loading ? (
+            <Loader2Icon className="animate-spin" />
+          ) : (
+            <SparklesIcon />
+          )}
           Generate With AI
         </Button>
       </div>
