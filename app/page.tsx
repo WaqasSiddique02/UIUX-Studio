@@ -3,16 +3,25 @@ import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Header from "./_shared/Header";
 import Hero from "./_shared/Hero";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { ProjectsSidebar } from "@/components/ProjectsSidebar";
 
 export default function Home() {
   return (
-    <div>
-      <Header />
-      <Hero />
-      <div className="fixed -top-40 -left-40 h-125 w-125 bg-purple-400/20 blur-[120px] rounded-full" />
-      <div className="fixed top-20 -right-50 h-125 w-125 bg-pink-400/20 blur-[120px] rounded-full" />
-      <div className="fixed -bottom-50 left-1/3 h-125 w-125 bg-blue-400/20 blur-[120px] rounded-full" />
-      <div className="fixed top-50 left-1/2 h-125 w-125 bg-sky-400/20 blur-[120px] rounded-full" />
-    </div>
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex w-full min-h-screen">
+        <ProjectsSidebar />
+        <SidebarInset className="flex-1 flex flex-col">
+          <Header />
+          <div className="flex-1 relative">
+            <Hero />
+            <div className="fixed -top-40 -left-40 h-125 w-125 bg-purple-400/20 blur-[120px] rounded-full" />
+            <div className="fixed top-20 -right-50 h-125 w-125 bg-pink-400/20 blur-[120px] rounded-full" />
+            <div className="fixed -bottom-50 left-1/3 h-125 w-125 bg-blue-400/20 blur-[120px] rounded-full" />
+            <div className="fixed top-50 left-1/2 h-125 w-125 bg-sky-400/20 blur-[120px] rounded-full" />
+          </div>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 }

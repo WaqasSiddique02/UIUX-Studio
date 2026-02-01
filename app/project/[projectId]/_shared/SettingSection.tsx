@@ -6,7 +6,7 @@ import { SettingContext } from "@/context/SettingContext";
 import { THEME_NAME_LIST, THEMES } from "@/data/themes";
 import { ProjectType } from "@/type/types";
 import axios from "axios";
-import { Camera, Loader2Icon, Save, Share, SparklesIcon } from "lucide-react";
+import { Loader2Icon, Save, Share, SparklesIcon } from "lucide-react";
 
 import React, { useContext, useEffect, useState } from "react";
 
@@ -72,7 +72,7 @@ function SettingSection({ projectDetail, screenDescription, onScreenGenerated, l
   };
 
   return (
-    <div className="w-[300px]  h-[90vh] p-5 border-r">
+    <div className="w-[300px] h-full p-5 border-r flex flex-col overflow-hidden">
       <h2 className="font-medium text-lg">Settings</h2>
 
       <div className="mt-3">
@@ -112,14 +112,14 @@ function SettingSection({ projectDetail, screenDescription, onScreenGenerated, l
         </Button>
       </div>
 
-      <div className="mt-5">
+      <div className="mt-5 flex-1 flex flex-col min-h-0">
         <h2 className="text-sm mb-1">Themes</h2>
-        <div className="h-[200px] overflow-auto">
+        <div className="flex-1 overflow-y-auto pr-2">
           <div>
             {THEME_NAME_LIST.map((theme, index) => (
               <div
                 key={theme}
-                className={`p-3 border rounded-xl mb-2 ${theme === selectedTheme && "border-primary bg-primary/20"}`}
+                className={`p-3 border rounded-xl mb-2 cursor-pointer hover:border-primary/50 transition-colors ${theme === selectedTheme && "border-primary bg-primary/20"}`}
                 onClick={() => onThemeSelect(theme)}
               >
                 <h2>{theme}</h2>
@@ -159,19 +159,7 @@ function SettingSection({ projectDetail, screenDescription, onScreenGenerated, l
         </div>
       </div>
 
-      <div className="mt-5">
-        <h2 className="text-sm mb-1">Extras</h2>
-        <div className="flex gap-3">
-          <Button size={"sm"} variant={"outline"} className="mt-2">
-            <Camera />
-            Screenshot
-          </Button>
-          <Button size={"sm"} variant={"outline"} className="mt-2">
-            <Share />
-            Share
-          </Button>
-        </div>
-      </div>
+
     </div>
   );
 }
