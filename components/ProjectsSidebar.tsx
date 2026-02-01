@@ -104,20 +104,6 @@ export function ProjectsSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
-        <div className="p-2">
-          <Button 
-            variant="outline" 
-            className="w-full justify-start gap-2"
-            onClick={() => router.push('/')}
-            size="sm"
-          >
-            <PlusIcon className="h-4 w-4" />
-            <span>New Project</span>
-          </Button>
-        </div>
-      </SidebarFooter>
-
       <SidebarRail />
     </Sidebar>
   )
