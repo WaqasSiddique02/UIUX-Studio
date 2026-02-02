@@ -5,6 +5,7 @@ import { Loader2Icon, Save } from "lucide-react";
 import { SettingContext } from "@/context/SettingContext";
 import axios from "axios";
 import { toast } from "sonner";
+import router from "next/router";
 
 function ProjectHeader() {
   const { settingsDetail, setSettingsDetail } = useContext(SettingContext);
