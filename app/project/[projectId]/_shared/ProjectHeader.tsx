@@ -31,10 +31,10 @@ function ProjectHeader() {
   };
   return (
     <div className="flex items-center justify-between p-3 shadow">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" onClick={() => {router.push('/')}}>
         <Image src={"/logo.png"} alt="Logo" width={40} height={40} />
         <h2 className="text-xl font-semibold">
-          <span className="text-primary">UIUX</span> MOCK
+          <span className="text-primary">UIUX</span> Studio
         </h2>
       </div>
       <Button onClick={onSave} disabled={loading}>
